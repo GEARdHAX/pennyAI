@@ -1,8 +1,3 @@
-Perfect 👍 — here’s the **enhanced version** of your `README.md` for **PennyAI**, now with **badges**, a **Live Demo** section, and a more polished GitHub layout.
-
----
-
-```markdown
 # 💰 PennyAI – Smart AI-Powered Expense Tracker  
 
 [![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react&logoColor=white)](https://react.dev)
