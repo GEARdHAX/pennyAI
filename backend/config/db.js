@@ -5,8 +5,6 @@ const connectDB = async () => {
     dotenv.config(); // Load environment variables
     try {
         const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pennyAI', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {

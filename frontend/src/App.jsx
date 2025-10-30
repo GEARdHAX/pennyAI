@@ -1,20 +1,26 @@
-import { useState } from 'react'
-import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-//import Login from './pages/Login'
-//import Signup from './pages/Signup'
-import {BrowserRouter ,Routes ,Route} from 'react-router-dom'
-import LoginPage from './pages/Login'
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard'; 
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import Logout from './components/Logout';
 
+function App() {
   return (
-    <BrowserRouter>
-    <Routes>
-       <Route path='Login' element={<LoginPage/>}></Route>
-    </Routes>
-  
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
