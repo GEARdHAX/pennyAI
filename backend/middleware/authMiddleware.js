@@ -12,7 +12,7 @@ const isAuthenticated = (req, res, next) => {
             message: 'Authorized! Redirecting to dashboard.',
             redirect: '/'
         });
-    }
+    }   
     next();
 };
 

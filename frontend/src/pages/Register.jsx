@@ -1,7 +1,7 @@
 import React , {useState,useContext,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext.jsx";
 const STATUS_CHECK_URL = 'http://localhost:5000/api/users/login';
 const LOGIN_POST_URL = 'http://localhost:5000/api/users/login';
 function Register(){
@@ -11,9 +11,9 @@ function Register(){
     const [ConfirmPassword,setConfirmPassword] = useState("")
     const [message,setMessage] = useState("")
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
 
     const { login } = useContext(AuthContext);
-    // This is crucial for sessions to work across requests
   axios.defaults.withCredentials = true;
   useEffect(() => {
           const checkLoginStatus = async () => {
@@ -71,19 +71,21 @@ const handleSubmit =(e)=>{
     return;
    }
 
-   // If all client-side checks pass, send data to backend
    axios.post('http://localhost:5000/api/users/register', { name, email, password })
     .then(result => {
-        console.log(result);
-        setMessage("Registration successful! Redirecting to login...");
-        // Navigate to login page after a short delay
-        setTimeout(() => {
-            navigate('/login');
-        }, 2000);
+        if (result.data.user) {
+            // If backend sends user data, it means auto-login was successful
+            login(result.data.user); // Update auth context
+            setMessage("Registration successful! Redirecting to dashboard...");
+            setTimeout(() => navigate('/'), 1500); // Redirect to dashboard
+        } else {
+            // If no user data, redirect to login page as a fallback
+            setMessage("Registration successful! Please log in.");
+            setTimeout(() => navigate('/login'), 1500);
+        }
     })
     .catch(err => {
         console.log(err);
-        // Handle server responses (like 'User already exists') vs. network errors
         if (err.response) {
             setMessage(err.response.data.message);
         } else {

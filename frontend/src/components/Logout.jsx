@@ -1,5 +1,5 @@
 import { useContext,React } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -13,7 +13,7 @@ const Logout = () => {
   };
 
   return (
-    <button onClick={handleLogout} className="text-red-400 hover:text-red-500 transition font-medium border p-3 rounded-md cursor-pointer text-center border-black">Logout</button>
+    <button onClick={handleLogout} className="text-red-400 hover:text-red-500 transition font-medium border p-3 rounded-md cursor-pointer text-center border-white">Logout</button>
   );
     
 };

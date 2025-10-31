@@ -15,7 +15,17 @@ const registerUser = async (req, res) => {
 
         await user.save();
 
-        res.status(201).json({ message: 'User registered successfully', userId: user._id });
+        // Automatically log in the user after successful registration
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error('Error logging in after registration:', err);
+                // If auto-login fails, we still let the frontend know registration was successful
+                // so it can redirect to the login page.
+                return res.status(201).json({ message: 'User registered successfully. Please log in.' });
+            }
+            // On successful login, send back user data
+            res.status(201).json({ message: 'Registration successful', user: { id: user.id, name: user.name, email: user.email } });
+        });
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');

@@ -1,13 +1,16 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 import LoginPage from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard'; 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
-import Logout from './components/Logout';
+import AddExpense from './pages/AddExpense';
 
 function App() {
   return (
+    <PrimeReactProvider>
+
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -16,10 +19,12 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/add" element={<AddExpense />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </PrimeReactProvider>
   );
 }
 

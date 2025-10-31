@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 const STATUS_CHECK_URL = 'http://localhost:5000/api/users/login';
 const LOGIN_POST_URL = 'http://localhost:5000/api/users/login';

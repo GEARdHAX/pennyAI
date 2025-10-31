@@ -2,10 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const expenseSchema = new Schema({
-    name: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
+    },
+    title: {
+        type: String,
+        required: [true, 'Please add a title for the expense']
     },
     amount: {
         type: Number,
