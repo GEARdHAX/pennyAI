@@ -26,9 +26,9 @@ export const AuthProvider = ({ children }) => {
         checkLoggedIn();
     }, []);
 
-    const login = (userData) => {
+   const login = (userData) => {
         setUser(userData);
-    };
+    }; 
 
     const logout = async () => {
         try {

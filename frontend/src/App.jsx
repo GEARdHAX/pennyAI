@@ -6,11 +6,11 @@ import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import AddExpense from './pages/AddExpense';
+import EditExpense from './pages/EditExpense';
 
 function App() {
   return (
     <PrimeReactProvider>
-
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -20,6 +20,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/add" element={<AddExpense />} />
+            <Route path="/edit/:id" element={<EditExpense />} />
           </Route>
         </Routes>
       </BrowserRouter>

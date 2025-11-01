@@ -1,7 +1,7 @@
 import React, { useContext,useEffect,useState } from 'react'
 import { AuthContext } from '../context/AuthContext.jsx';
 import Logout from '../components/Logout';
-
+import { Pencil } from 'lucide-react';
 const Dashboard = () => {
   const [data, setdata] = useState([])
   const { user } = useContext(AuthContext);
@@ -58,6 +58,9 @@ const Dashboard = () => {
                 <th scope="col" className="px-6 py-3">
                     Date
                 </th>
+                <th scope="col" className="px-6 py-3">
+                    Edit
+                </th>
             </tr>
         </thead>
             <tbody>
@@ -70,6 +73,7 @@ const Dashboard = () => {
         <td className="px-6 py-4">{expense.category}</td>
         <td className="px-6 py-4">{expense.amount}</td>
         <td className="px-6 py-4">{expense.date.split('T')[0]}</td>
+        <td className="px-6 py-4"><a href={`/edit/${expense._id}`}><Pencil className='text-xs'/></a></td>
       </tr>
     ))
   ) : (

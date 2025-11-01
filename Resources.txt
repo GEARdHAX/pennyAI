@@ -1,3 +1,4 @@
 CSS = https://tailwindcss.com/docs/installation/using-vite ([Tailwindcss])
 UI Components = https://primereact.org
 UI Utilites = https://uiverse.io
+Charts = https://flowbite.com/docs/plugins/charts
