@@ -4,212 +4,263 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext.jsx';
 
 const AddExpense = () => {
-    
-    // const [note ,setNote] = useState("");
-    // const [description,setDes] = useState("");
-     
     const [formData, setFormData] = useState({
         title: '',
-        category: 'Other',
+        category: '',
         amount: '',
-        date: new Date().toISOString().split('T')[0], // Defaults to today
+        date: new Date().toISOString().split('T')[0],
+        note: ''
     });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
-    const { user } = useContext(AuthContext); // We use 'user' to check if logged in
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const { title, category, amount, date } = formData;
+    const { title, category, amount, date, note, description } = formData;
 
     const onChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const onSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
+        e.preventDefault();
+        setError('');
+        setMessage('');
 
-    if (!user) {
-        setError("Authentication error. Please log in again.");
-        return;
-    }
-
-    try {
-        // Use axios which is configured for cookie-based auth
-        axios.defaults.withCredentials = true;
-        const response = await axios.post('http://localhost:5000/api/expenses', formData);
-
-        if (response.status === 201) {
-            setMessage('Expense added successfully!');
-            // Redirect to the dashboard
-            // setTimeout(() => navigate('/'), 1500);
-        } else {
-            throw new Error(response.data.message || 'Failed to add expense');
+        if (!user) {
+            setError("Authentication error. Please log in again.");
+            return;
         }
-    } catch (err) {
-        setError(err.response?.data?.message || err.message || 'An error occurred.');
-    }
-};
 
+        try {
+            axios.defaults.withCredentials = true;
+            const response = await axios.post('http://localhost:5000/api/expenses', formData);
 
-    const inputClasses = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500";
-    const labelClasses = "block mb-2 text-sm font-medium text-gray-900 dark:text-white";
+            if (response.status === 201) {
+                setMessage('Expense added successfully!');
+                setTimeout(() => navigate('/'), 1500);
+            } else {
+                throw new Error(response.data.message || 'Failed to add expense');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || err.message || 'An error occurred.');
+        }
+    };
+
+    // Format date for display
+    const formatDisplayDate = (dateString) => {
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    };
+
+    const inputClasses = "bg-gray-900/40 border border-gray-600 text-white text-lg rounded-2xl focus:ring-2 focus:ring-[#2F80ED] focus:border-transparent block w-full p-4 placeholder-gray-400 backdrop-blur-sm transition-all duration-200 h-14";
+    const labelClasses = "block mb-3 text-sm font-medium text-white/80 uppercase tracking-wide";
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#001F3F] to-[#001030] text-white font-inter flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl grid md:grid-cols-3 gap-6">
-        {/* Left Panel */}
-        <div className="md:col-span-2 bg-white/5 backdrop-blur-xl rounded-3xl shadow-[0_0_30px_rgba(47,128,237,0.2)] border border-white/10 p-8">
-          <h2 className="text-3xl font-bold font-poppins mb-2 flex items-center gap-2">
-            <span className="w-8 h-8 bg-gradient-to-r from-[#2F80ED] to-[#56CCF2] text-white rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(86,204,242,0.6)]">
-              +
-            </span>{" "}
-            Add New Expense
-          </h2>
-          <p className="text-white/70 mb-8">
-            Track your spending by adding transaction details below.
-          </p>
+        <div className='min-h-screen bg-gradient-to-br from-[#001F3F] to-[#001030] flex'>
+            {/* Main Content */}
+            <div className="flex-1 p-8">
+                <div className="max-w-4xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-bold text-white mb-2 font-['Poppins']">
+                            Add New Expense
+                        </h1>
+                        <p className="text-white/60 text-lg">
+                            Track your spending by adding transaction details below
+                        </p>
+                    </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Amount */}
-            <div>
-              <label className="block text-white/90 mb-2 font-medium">Amount</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="$0"
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/40 focus:ring-2 focus:ring-[#2F80ED] focus:outline-none transition"
-              />
-              <div className="flex gap-3 mt-3 text-white/70">
-                {["10", "25", "50", "100", "200"].map((val) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => setAmount(val)}
-                    className="px-4 py-1 bg-white/5 rounded-xl border border-white/10 hover:bg-[#2F80ED]/20 transition"
-                  >
-                    ${val}
-                  </button>
-                ))}
-              </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column - Form */}
+                        <div className="lg:col-span-2">
+                            {/* Transaction Details Card */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl mb-8">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Transaction Details
+                                </h2>
+                                <p className="text-white/60 mb-8">
+                                    Fill in the information about your expense
+                                </p>
+
+                                {error && (
+                                    <div className="mb-6 p-4 bg-red-500/20 border border-red-400 rounded-xl text-red-200 text-sm">
+                                        {error}
+                                    </div>
+                                )}
+                                {message && (
+                                    <div className="mb-6 p-4 bg-green-500/20 border border-green-400 rounded-xl text-green-200 text-sm">
+                                        {message}
+                                    </div>
+                                )}
+
+                                <form onSubmit={onSubmit} className="space-y-6">
+                                    {/* Amount */}
+                                    <div>
+                                        <label htmlFor="amount" className={labelClasses}>
+                                            Amount
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 text-xl">$</span>
+                                            <input
+                                                type="number"
+                                                id="amount"
+                                                name="amount"
+                                                value={amount}
+                                                onChange={onChange}
+                                                className={inputClasses}
+                                                placeholder="100"
+                                                required
+                                                min="0.01"
+                                                step="0.01"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Category */}
+                                    <div>
+                                        <label htmlFor="category" className={labelClasses}>
+                                            Category
+                                        </label>
+                                        <select
+                                            id="category"
+                                            name="category"
+                                            value={category}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            required
+                                        >
+                                            <option value="">Select a category</option>
+                                            <option value="Food & Dining">Food & Dining</option>
+                                            <option value="Transportation">Transportation</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Office">Office</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="Housing">Housing</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Date */}
+                                    <div>
+                                        <label htmlFor="date" className={labelClasses}>
+                                            Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="date"
+                                            name="date"
+                                            value={date}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            required
+                                        />
+                                        <p className="text-white/40 text-sm mt-2">
+                                            {formatDisplayDate(date)}
+                                        </p>
+                                    </div>
+
+
+                                    {/* Note */}
+                                    <div>
+                                        <label htmlFor="note" className={labelClasses}>
+                                            Note
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="note"
+                                            name="note"
+                                            value={note}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            placeholder="Client lunch at restaurant"
+                                        />
+                                    </div>
+
+
+                                    {/* Submit Button */}
+                                    <button 
+                                        type="submit" 
+                                        className="w-full bg-gradient-to-r from-[#2F80ED] to-[#56CCF2] text-white font-bold rounded-2xl py-5 px-6 hover:shadow-2xl hover:shadow-blue-500/30 transform hover:-translate-y-1 transition-all duration-200 focus:ring-4 focus:ring-blue-400/30 font-['Poppins'] text-xl mt-8"
+                                    >
+                                        Add Expense
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Right Column - Summary */}
+                        <div className="lg:col-span-1">
+                            {/* Today's Summary Card */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl mb-8">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Today's Summary
+                                </h2>
+                                
+                                <div className="space-y-6">
+                                    {/* Total Spent */}
+                                    <div>
+                                        <h3 className="text-white/60 text-sm uppercase tracking-wide mb-2">
+                                            Total Spent Today
+                                        </h3>
+                                        <p className="text-3xl font-bold text-white font-['Poppins']">
+                                            $0.00
+                                        </p>
+                                        <p className="text-white/40 text-sm mt-1">
+                                            Transaction Today
+                                        </p>
+                                    </div>
+
+                                    {/* Categories */}
+                                    <div>
+                                        <h3 className="text-white/60 text-sm uppercase tracking-wide mb-4">
+                                            Categories
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {['Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 'Office', 'Utilities'].map((cat) => (
+                                                <div key={cat} className="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                                                    <span className="text-white/80 text-sm">{cat}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Recent Expenses */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Recent Expenses
+                                </h2>
+                                <div className="space-y-4">
+                                    {[
+                                        { amount: 200, category: 'Food' },
+                                        { amount: 250, category: 'Transport' },
+                                        { amount: 260, category: 'Shopping' },
+                                        { amount: 2600, category: 'Office' }
+                                    ].map((expense, index) => (
+                                        <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                                            <span className="text-white/60">${expense.amount}</span>
+                                            <span className="text-white/80">{expense.category}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-6 pt-4 border-t border-white/10">
+                                    <p className="text-white/40 text-sm text-center">
+                                        Top four expenses from the account reading
+                                    </p>
+                                    <p className="text-white/40 text-xs text-center mt-2">
+                                        18:38
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-white/90 mb-2 font-medium">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white focus:ring-2 focus:ring-[#2F80ED] focus:outline-none"
-              >
-                <option className="bg-[#001030] text-white/70">
-                  Select a category
-                </option>
-                <option className="bg-[#001030] text-white">Food & Dining</option>
-                <option className="bg-[#001030] text-white">Transportation</option>
-                <option className="bg-[#001030] text-white">Shopping</option>
-                <option className="bg-[#001030] text-white">Entertainment</option>
-                <option className="bg-[#001030] text-white">Others</option>
-              </select>
-            </div>
-
-            {/* Date */}
-            <div>
-              <label className="block text-white/90 mb-2 font-medium">Date</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white focus:ring-2 focus:ring-[#2F80ED] focus:outline-none"
-              />
-            </div>
-
-            {/* Note */}
-            <div>
-              <label className="block text-white/90 mb-2 font-medium">Note</label>
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g., Lunch at restaurant"
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/40 focus:ring-2 focus:ring-[#2F80ED] focus:outline-none"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-white/90 mb-2 font-medium">
-                Description (Optional)
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add any additional details..."
-                rows="3"
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/40 focus:ring-2 focus:ring-[#2F80ED] focus:outline-none"
-              />
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="w-full py-3 font-semibold rounded-xl bg-gradient-to-r from-[#2F80ED] to-[#56CCF2] text-white hover:shadow-[0_0_20px_rgba(86,204,242,0.5)] transition-all duration-300"
-            >
-              Add Expense
-            </button>
-          </form>
         </div>
-
-        {/* Right Panel */}
-        <div className="space-y-6">
-          {/* Today's Summary */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-[0_0_25px_rgba(47,128,237,0.15)]">
-            <h3 className="text-xl font-semibold font-poppins text-white mb-4">
-              Today’s Summary
-            </h3>
-            <p className="text-white/60 text-sm">Total Spent Today</p>
-            <p className="text-3xl font-bold text-[#56CCF2] mb-1">$0.00</p>
-            <p className="text-white/60 text-sm">Transactions Today: 0</p>
-          </div>
-
-          {/* Categories */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-[0_0_25px_rgba(47,128,237,0.15)]">
-            <h3 className="text-xl font-semibold font-poppins text-white mb-4">
-              Categories
-            </h3>
-            <ul className="space-y-3">
-              {[
-                { name: "Food & Dining", color: "text-[#56CCF2]" },
-                { name: "Transportation", color: "text-[#2F80ED]" },
-                { name: "Shopping", color: "text-[#6DD5FA]" },
-                { name: "Entertainment", color: "text-[#4AA3F2]" },
-                { name: "Others", color: "text-white/70" },
-              ].map((cat, i) => (
-                <li
-                  key={i}
-                  className="flex justify-between items-center bg-white/5 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/10 transition"
-                >
-                  <span className={`font-medium ${cat.color}`}>{cat.name}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Pro Tip */}
-          <div className="bg-gradient-to-r from-[#2F80ED]/10 to-[#56CCF2]/10 border border-[#2F80ED]/20 rounded-2xl p-4">
-            <p className="text-sm text-white/80">
-              💡 <span className="font-medium text-[#56CCF2]">Pro Tip:</span> Add
-              expenses as soon as they occur for accurate tracking.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
     );
 };
 
