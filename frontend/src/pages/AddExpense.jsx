@@ -6,128 +6,260 @@ import { AuthContext } from '../context/AuthContext.jsx';
 const AddExpense = () => {
     const [formData, setFormData] = useState({
         title: '',
-        category: 'Other',
+        category: '',
         amount: '',
-        date: new Date().toISOString().split('T')[0], // Defaults to today
+        date: new Date().toISOString().split('T')[0],
+        note: ''
     });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
-    const { user } = useContext(AuthContext); // We use 'user' to check if logged in
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const { title, category, amount, date } = formData;
+    const { title, category, amount, date, note, description } = formData;
 
     const onChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const onSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
+        e.preventDefault();
+        setError('');
+        setMessage('');
 
-    if (!user) {
-        setError("Authentication error. Please log in again.");
-        return;
-    }
-
-    try {
-        // Use axios which is configured for cookie-based auth
-        axios.defaults.withCredentials = true;
-        const response = await axios.post('http://localhost:5000/api/expenses', formData);
-
-        if (response.status === 201) {
-            setMessage('Expense added successfully!');
-            // Redirect to the dashboard
-            // setTimeout(() => navigate('/'), 1500);
-        } else {
-            throw new Error(response.data.message || 'Failed to add expense');
+        if (!user) {
+            setError("Authentication error. Please log in again.");
+            return;
         }
-    } catch (err) {
-        setError(err.response?.data?.message || err.message || 'An error occurred.');
-    }
-};
 
+        try {
+            axios.defaults.withCredentials = true;
+            const response = await axios.post('http://localhost:5000/api/expenses', formData);
 
-    const inputClasses = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500";
-    const labelClasses = "block mb-2 text-sm font-medium text-gray-900 dark:text-white";
+            if (response.status === 201) {
+                setMessage('Expense added successfully!');
+                setTimeout(() => navigate('/'), 1500);
+            } else {
+                throw new Error(response.data.message || 'Failed to add expense');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || err.message || 'An error occurred.');
+        }
+    };
+
+    // Format date for display
+    const formatDisplayDate = (dateString) => {
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    };
+
+    const inputClasses = "bg-gray-900/40 border border-gray-600 text-white text-lg rounded-2xl focus:ring-2 focus:ring-[#2F80ED] focus:border-transparent block w-full p-4 placeholder-gray-400 backdrop-blur-sm transition-all duration-200 h-14";
+    const labelClasses = "block mb-3 text-sm font-medium text-white/80 uppercase tracking-wide";
 
     return (
-        <div className='bg-zinc-800 h-screen flex justify-center items-center flex-col gap-4 text-white text-center font-semibold text-xl'>
-            <h2 className="text-3xl font-bold mb-4">Add a New Expense</h2>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            {message && <p className="text-green-500 text-sm">{message}</p>}
-            <form onSubmit={onSubmit} className="w-full max-w-lg">
-                <div className="grid gap-6 mb-6 md:grid-cols-2">
-                    <div>
-                        <label htmlFor="title" className={labelClasses}>Expense Title</label>
-                        <input
-                            type="text"
-                            id="title"
-                            name="title"
-                            value={title}
-                            onChange={onChange}
-                            className={inputClasses}
-                            placeholder="e.g., Coffee with friends"
-                            required
-                        />
+        <div className='min-h-screen bg-gradient-to-br from-[#001F3F] to-[#001030] flex'>
+            {/* Main Content */}
+            <div className="flex-1 p-8">
+                <div className="max-w-4xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-bold text-white mb-2 font-['Poppins']">
+                            Add New Expense
+                        </h1>
+                        <p className="text-white/60 text-lg">
+                            Track your spending by adding transaction details below
+                        </p>
                     </div>
-                    <div>
-                        <label htmlFor="amount" className={labelClasses}>Amount</label>
-                        <input
-                            type="number"
-                            id="amount"
-                            name="amount"
-                            value={amount}
-                            onChange={onChange}
-                            className={inputClasses}
-                            placeholder="0.00"
-                            required
-                            min="0.01"
-                            step="0.01"
-                        />
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column - Form */}
+                        <div className="lg:col-span-2">
+                            {/* Transaction Details Card */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl mb-8">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Transaction Details
+                                </h2>
+                                <p className="text-white/60 mb-8">
+                                    Fill in the information about your expense
+                                </p>
+
+                                {error && (
+                                    <div className="mb-6 p-4 bg-red-500/20 border border-red-400 rounded-xl text-red-200 text-sm">
+                                        {error}
+                                    </div>
+                                )}
+                                {message && (
+                                    <div className="mb-6 p-4 bg-green-500/20 border border-green-400 rounded-xl text-green-200 text-sm">
+                                        {message}
+                                    </div>
+                                )}
+
+                                <form onSubmit={onSubmit} className="space-y-6">
+                                    {/* Amount */}
+                                    <div>
+                                        <label htmlFor="amount" className={labelClasses}>
+                                            Amount
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 text-xl">$</span>
+                                            <input
+                                                type="number"
+                                                id="amount"
+                                                name="amount"
+                                                value={amount}
+                                                onChange={onChange}
+                                                className={inputClasses}
+                                                placeholder="100"
+                                                required
+                                                min="0.01"
+                                                step="0.01"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Category */}
+                                    <div>
+                                        <label htmlFor="category" className={labelClasses}>
+                                            Category
+                                        </label>
+                                        <select
+                                            id="category"
+                                            name="category"
+                                            value={category}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            required
+                                        >
+                                            <option value="">Select a category</option>
+                                            <option value="Food & Dining">Food & Dining</option>
+                                            <option value="Transportation">Transportation</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Office">Office</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="Housing">Housing</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Date */}
+                                    <div>
+                                        <label htmlFor="date" className={labelClasses}>
+                                            Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="date"
+                                            name="date"
+                                            value={date}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            required
+                                        />
+                                        <p className="text-white/40 text-sm mt-2">
+                                            {formatDisplayDate(date)}
+                                        </p>
+                                    </div>
+
+
+                                    {/* Note */}
+                                    <div>
+                                        <label htmlFor="note" className={labelClasses}>
+                                            Note
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="note"
+                                            name="note"
+                                            value={note}
+                                            onChange={onChange}
+                                            className={inputClasses}
+                                            placeholder="Client lunch at restaurant"
+                                        />
+                                    </div>
+
+
+                                    {/* Submit Button */}
+                                    <button 
+                                        type="submit" 
+                                        className="w-full bg-gradient-to-r from-[#2F80ED] to-[#56CCF2] text-white font-bold rounded-2xl py-5 px-6 hover:shadow-2xl hover:shadow-blue-500/30 transform hover:-translate-y-1 transition-all duration-200 focus:ring-4 focus:ring-blue-400/30 font-['Poppins'] text-xl mt-8"
+                                    >
+                                        Add Expense
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Right Column - Summary */}
+                        <div className="lg:col-span-1">
+                            {/* Today's Summary Card */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl mb-8">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Today's Summary
+                                </h2>
+                                
+                                <div className="space-y-6">
+                                    {/* Total Spent */}
+                                    <div>
+                                        <h3 className="text-white/60 text-sm uppercase tracking-wide mb-2">
+                                            Total Spent Today
+                                        </h3>
+                                        <p className="text-3xl font-bold text-white font-['Poppins']">
+                                            $0.00
+                                        </p>
+                                        <p className="text-white/40 text-sm mt-1">
+                                            Transaction Today
+                                        </p>
+                                    </div>
+
+                                    {/* Categories */}
+                                    <div>
+                                        <h3 className="text-white/60 text-sm uppercase tracking-wide mb-4">
+                                            Categories
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {['Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 'Office', 'Utilities'].map((cat) => (
+                                                <div key={cat} className="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                                                    <span className="text-white/80 text-sm">{cat}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Recent Expenses */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
+                                <h2 className="text-2xl font-bold text-white mb-6 font-['Poppins']">
+                                    Recent Expenses
+                                </h2>
+                                <div className="space-y-4">
+                                    {[
+                                        { amount: 200, category: 'Food' },
+                                        { amount: 250, category: 'Transport' },
+                                        { amount: 260, category: 'Shopping' },
+                                        { amount: 2600, category: 'Office' }
+                                    ].map((expense, index) => (
+                                        <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                                            <span className="text-white/60">${expense.amount}</span>
+                                            <span className="text-white/80">{expense.category}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-6 pt-4 border-t border-white/10">
+                                    <p className="text-white/40 text-sm text-center">
+                                        Top four expenses from the account reading
+                                    </p>
+                                    <p className="text-white/40 text-xs text-center mt-2">
+                                        18:38
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div className="grid gap-6 mb-6 md:grid-cols-2">
-                    <div>
-                        <label htmlFor="category" className={labelClasses}>Category</label>
-                        <select
-                            id="category"
-                            name="category"
-                            value={category}
-                            onChange={onChange}
-                            className={inputClasses}
-                        >
-                            <option value="Other">Other</option>
-                            <option value="Food & Dining">Food & Dining</option>
-                            <option value="Transportation">Transportation</option>
-                            <option value="Housing">Housing</option>
-                            <option value="Utilities">Utilities</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Salary">Salary</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="date" className={labelClasses}>Date</label>
-                        <input
-                            type="date"
-                            id="date"
-                            name="date"
-                            value={date}
-                            onChange={onChange}
-                            className={inputClasses}
-                            required
-                        />
-                    </div>
-                </div>
-
-                <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Add Expense
-                </button>
-            </form>
+            </div>
         </div>
     );
 };
