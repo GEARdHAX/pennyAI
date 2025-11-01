@@ -1,0 +1,1 @@
+axios bootstrap primereact react react-bootstrap react-dom react-router-dom tailwindcss

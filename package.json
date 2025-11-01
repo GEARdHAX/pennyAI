@@ -1,7 +1,7 @@
 {
   "name": "pennyai",
   "version": "1.0.0",
-  "description": "",
+  "description": "[![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react&logoColor=white)](https://react.dev)\r [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org)\r [![Express](https://img.shields.io/badge/API-Express.js-black?logo=express)](https://expressjs.com)\r [![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com)\r [![Tailwind](https://img.shields.io/badge/UI-Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)\r [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)",
   "homepage": "https://github.com/GEARdHAX/pennyAI#readme",
   "bugs": {
     "url": "https://github.com/GEARdHAX/pennyAI/issues"
@@ -16,11 +16,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm start",
-    "client": "cd frontend && npm run dev"
+    "client": "cd frontend && npm run dev",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.19.2"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@vitejs/plugin-react": "^5.1.0",
+    "concurrently": "^9.2.1",
+    "vite": "^7.1.12"
   }
 }

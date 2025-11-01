@@ -1,10 +1,36 @@
 const express = require('express');
 const connectDB = require('./config/db');
-const user = require('./models/User');
-const expense = require('./models/Expense');
+const session = require('express-session');
+const passport = require('passport');
+const cors = require('cors');
 const app = express();
+const dotenv = require('dotenv');
+dotenv.config();
+
+
+
+require('./config/passport')(passport);
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 app.use(express.json());
+
+// Express Session Middleware
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'pennyai@1234',
+        resave: false,
+        saveUninitialized: false,
+
+    })
+);
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Define Routes
 app.use('/api/users', require('./routes/userRoutes'));

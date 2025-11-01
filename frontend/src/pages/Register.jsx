@@ -1,15 +1,52 @@
-import React , {useState} from "react";
+import React , {useState,useContext,useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext.jsx";
+const STATUS_CHECK_URL = 'http://localhost:5000/api/users/login';
+const LOGIN_POST_URL = 'http://localhost:5000/api/users/login';
 function Register(){
-    const [FirstName,setFirstName] = useState("")
-    const [LastName,setLastName] = useState("")
+    const [name,setName] = useState("")
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
     const [ConfirmPassword,setConfirmPassword] = useState("")
     const [message,setMessage] = useState("")
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
 
+    const { login } = useContext(AuthContext);
+  axios.defaults.withCredentials = true;
+  useEffect(() => {
+          const checkLoginStatus = async () => {
+              try {
+                  const response = await fetch(STATUS_CHECK_URL, {
+                      method: 'GET',
+                      credentials: 'include',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                  });
+                  
+                  const data = await response.json(); 
+                  
+                  if (data.redirect) {
+                      console.log(data.message);
+                      setMessage(data.message);
+                      navigate(data.redirect); 
+                  }
+                  
+              } catch (error) {
+                  console.error("Status check failed or returned HTML.", error); 
+              } finally {
+                  setIsLoading(false);
+              }
+          };
+          
+          checkLoginStatus();
+          
+      }, [navigate]);
 const handleSubmit =(e)=>{
    e.preventDefault();
-   if(FirstName === "" || LastName === "" || email === "" || password === "" || ConfirmPassword === ""){
+   if(name === "" || email === "" || password === "" || ConfirmPassword === ""){
     setMessage("Please fill in all fields");
     return;
    }
@@ -33,7 +70,28 @@ const handleSubmit =(e)=>{
     setMessage("Please enter a valid email");
     return;
    }
-                                           
+
+   axios.post('http://localhost:5000/api/users/register', { name, email, password })
+    .then(result => {
+        if (result.data.user) {
+            // If backend sends user data, it means auto-login was successful
+            login(result.data.user); // Update auth context
+            setMessage("Registration successful! Redirecting to dashboard...");
+            setTimeout(() => navigate('/'), 1500); // Redirect to dashboard
+        } else {
+            // If no user data, redirect to login page as a fallback
+            setMessage("Registration successful! Please log in.");
+            setTimeout(() => navigate('/login'), 1500);
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        if (err.response) {
+            setMessage(err.response.data.message);
+        } else {
+            setMessage("Network Error: Could not connect to the server. Please make sure it's running.");
+        }
+    });
 };
 
   return (
@@ -48,22 +106,12 @@ const handleSubmit =(e)=>{
 
         <form onSubmit={handleSubmit}>
         <div className="mb-4">
-            <label className="block text-left text-gray-300 mb-2">First Name</label>
+            <label className="block text-left text-gray-300 mb-2">Name</label>
             <input
               type="text"
-              placeholder="First Name"
-              value={FirstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full p-3 rounded-lg bg-blue-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-300 mb-2">Last Name</label>
-            <input
-              type="text"
-              placeholder="Last Name"
-              value={email}
-              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Enter your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full p-3 rounded-lg bg-blue-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
             />
           </div>
@@ -87,9 +135,7 @@ const handleSubmit =(e)=>{
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 rounded-lg bg-blue-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
             />
-            {/* <p className="text-right text-sm text-sky-400 hover:underline cursor-pointer mt-1">
-              Forgot Password?
-            </p> */}
+          </div>
             <div className="mb-4">
             <label className="block text-gray-300 mb-2">Confirm Password</label>
             <input
@@ -99,7 +145,6 @@ const handleSubmit =(e)=>{
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-3 rounded-lg bg-blue-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
             />
-          </div>
           </div>
 
           <button
