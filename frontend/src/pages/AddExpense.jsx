@@ -5,8 +5,8 @@ import { AuthContext } from '../context/AuthContext.jsx';
 
 const AddExpense = () => {
     
-    const [note ,setNote] = useState("");
-    const [description,setDes] = useState("");
+    // const [note ,setNote] = useState("");
+    // const [description,setDes] = useState("");
      
     const [formData, setFormData] = useState({
         title: '',
