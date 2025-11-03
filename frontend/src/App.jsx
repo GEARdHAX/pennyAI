@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import AddExpense from './pages/AddExpense';
 import EditExpense from './pages/EditExpense';
+import AreaChart from './components/AreaChart';
 
 function App() {
   return (
@@ -15,8 +16,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<Register />} />
-
+            <Route path="/register" element={<Register />} />
+            <Route path="/chart" element={<AreaChart />} />
+            
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/add" element={<AddExpense />} />
