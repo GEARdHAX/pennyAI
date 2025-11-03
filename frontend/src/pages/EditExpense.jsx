@@ -6,9 +6,9 @@ import { AuthContext } from '../context/AuthContext.jsx';
 const EditExpense = () => {
     const [formData, setFormData] = useState({
         title: '',
-        category: 'Other',
+        category: '',
         amount: '',
-        date: new Date().toISOString().split('T')[0], // Defaults to today
+        date: new Date().toISOString().split('T')[0],
     });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -88,7 +88,7 @@ const EditExpense = () => {
             <h2 className="text-3xl font-bold mb-4">Edit Expense</h2>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {message && <p className="text-green-500 text-sm">{message}</p>}
-            <form onSubmit={onSubmit} className="w-full max-w-lg">
+            <form onSubmit={onSubmit} className="w-full max-w-lg p-4">
                 <div className="grid gap-6 mb-6 md:grid-cols-2">
                     <div>
                         <label htmlFor="title" className={labelClasses}>Expense Title</label>
@@ -129,6 +129,7 @@ const EditExpense = () => {
                             value={category}
                             onChange={onChange}
                             className={inputClasses}
+                            required
                         >
                             <option value="Other">Other</option>
                             <option value="Food & Dining">Food & Dining</option>

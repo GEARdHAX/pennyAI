@@ -57,6 +57,7 @@ const deleteExpense = async (req, res) => {
         if (!expense) {
             return res.status(404).json({ message: 'Expense not found' });
         }
+        res.json({ message: 'Expense deleted successfully' });
     }
     catch (error) {
         return res.status(500).send('Server Error');
